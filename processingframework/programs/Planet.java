@@ -59,12 +59,15 @@ public class Planet {
     public float getGravity(){
         return gravity;
     }
+
     public float getMinTemperature(){
         return minTemp;
     }
+
     public float getMaxTemperature(){
         return maxTemp;
     }
+
     public float getRadius() {
         return radius;
     }
@@ -84,7 +87,6 @@ public class Planet {
     public String getDescription1(){
 		return description1;
 	}
-
 
 	public void setX(float x) {
 		this.x = x;

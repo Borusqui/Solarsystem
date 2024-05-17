@@ -18,13 +18,15 @@ public class ProcessingRun extends PApplet {
         ORBIT_PAUSED
     }
 
-    public void settings() {
+    public void settings() 
+    {
         prg.setup(this);
         lastTime = System.currentTimeMillis();
     }
 
 
-    public void draw() {
+    public void draw() 
+    {
         long curTime = System.currentTimeMillis();
         double timeElapsed = 0;
         curTimeSeconds = (curTime - lastTime) / 1000;
@@ -48,12 +50,12 @@ public class ProcessingRun extends PApplet {
     
 		prg.draw(this, zoomFactor, panX, panY);
 
-		// Reset transformations
 		resetMatrix();
         }
     
 
-    public void keyPressed() {
+    public void keyPressed() 
+    {
         if (key == 'p') {
             togglePause();
         }
@@ -85,11 +87,13 @@ public class ProcessingRun extends PApplet {
         }
     }
 
-    public static boolean isOrbitPaused() {
+    public static boolean isOrbitPaused() 
+    {
         return state == RunState.ORBIT_PAUSED;
     }
 
-    private void togglePause() {
+    private void togglePause() 
+    {
         if (state == RunState.RUNNING) {
             state = RunState.PAUSED;
         } else {
@@ -97,7 +101,8 @@ public class ProcessingRun extends PApplet {
         }
     }
 
-    private void toggleOrbitPause() {
+    private void toggleOrbitPause() 
+    {
         if (state == RunState.ORBIT_PAUSED) {
             state = RunState.RUNNING;
         } else {
@@ -105,21 +110,25 @@ public class ProcessingRun extends PApplet {
         }
     }
 
-    private void zoomIn() {
+    private void zoomIn() 
+    {
         zoomFactor *= 1.1;
     }
 
-    private void zoomOut() {
+    private void zoomOut() 
+    {
         zoomFactor /= 1.1;
     }
 
-    private void resetZoom() {
+    private void resetZoom() 
+    {
         zoomFactor = 1.0f;
         panX = 0;
         panY = 0;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
         PApplet.main("ProcessingRun");
     }
 }

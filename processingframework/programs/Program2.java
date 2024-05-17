@@ -19,20 +19,18 @@ public class Program2 implements ProcessingProgram {
 	private boolean spaceStationShow; 
 	private InfoBox infoBox;
 	private InfoBox keyBox;
-
-
+	private boolean cooldown = false;
+	private final int cooldownDuration = 500;
+	private long lastClickTime = 0;
 
     public Program2() {
         planets = new ArrayList<>();
 		planetStances = new ArrayList<>();
 		infoBox = new InfoBox(400,500,40);
 		keyBox = new InfoBox(400, 200, 40);
-		
-
     }
 	
-
-
+	//SETUP
     @Override
     public void setup(PApplet applet) {
 		
@@ -40,7 +38,7 @@ public class Program2 implements ProcessingProgram {
 		introMenuShown = false;
 		spaceStationShow = false;
 		
-        // Load images
+        // Load & resize images
         PImage sunImage = applet.loadImage("Sun.png");
         PImage mercuryImage = applet.loadImage("Mercury.png");
         PImage venusImage = applet.loadImage("Venus.png");
@@ -54,11 +52,9 @@ public class Program2 implements ProcessingProgram {
 		PImage marsMoonImage = applet.loadImage("MarsMoon.png");
 		PImage marsMoon1Image = applet.loadImage("MarsMoon1.png");
 		PImage neptuneMoonImage = applet.loadImage("MarsMoon.png");
-
 		PImage asteroidBeltImage = applet.loadImage("AsteroidBelt.png");
 		PImage spaceStationImage = applet.loadImage("SpaceStation.png");
 
-		// Resize images with manual adjustments
 		mercuryImage.resize(30, 30);  
 		venusImage.resize(50, 50);    
 		earthImage.resize(65, 65);     
@@ -67,17 +63,13 @@ public class Program2 implements ProcessingProgram {
 		saturnImage.resize(120, 120);  
 		uranusImage.resize(90, 90);    
 		neptuneImage.resize(75, 75);  
-
 		moonImage.resize(17, 17);
 		marsMoonImage.resize(8,8);
 		marsMoon1Image.resize(10,10);
 		neptuneMoonImage.resize(10,10);
-
 		asteroidBeltImage.resize(1000, 1000);
 		spaceStationImage.resize(950,950);
 		
-
-
         // Initialize Sun
         sun = new Sun(applet, "Sun", 50, 5778, 1, 500000000, sunImage, "The sun is hot and old");
 
@@ -91,64 +83,70 @@ public class Program2 implements ProcessingProgram {
 		planets.add(new Planet("Uranus", 25362, 2871f, 3068.85f, 27, -224, 49, 0.89f, "Uranus er den syvende planet fra Solen og er en is kæmpe med en unik rotation. Den roterer på sin side, hvilket resulterer i voldsomme årstidsændringer.", "Uranus har ikke været det primære mål for nogen dedikerede rumfartsmissioner hidtil. Dog bidrager data fra teleskoper og rumobservatorier fortsat til vores forståelse af denne fjerne planet.", uranusImage));
 		planets.add(new Planet("Neptune", 24622, 4498f, 6019.02f, 14, -218, 10, 1.12f, "Neptun er den ottende og fjerneste kendte planet fra Solen i Solsystemet. Den har en storm kaldet Den Store Mørke Plet og er omgivet af et tyndt system af ringe.", " På samme måde som Uranus har Neptun ikke været fokus for dedikerede rumfartsmissioner. De fleste af vores oplysninger om Neptun stammer fra teleskopiske observationer og Voyager 2-flybyen i 1989, der leverede nærbilleder og data om planeten og dens måner.", neptuneImage));
 		
-	// Create PlanetStance instances for each planet
-for (Planet planet : planets) {
-	PImage image = planet.getImage();
-    planetStances.add(new PlanetStance(applet, image, planet, animationPaused, this));
+		// Create PlanetStance instances for each planet
+		for (Planet planet : planets) {
+			PImage image = planet.getImage();
+			planetStances.add(new PlanetStance(applet, image, planet, animationPaused, this));
+		}
+
+		Planet earthPlanet = null;
+		for (Planet planet : planets) {
+			if (planet.getName().equals("Earth")) {
+				earthPlanet = planet;
+				break;
+			}
+		}
+
+		Planet marsPlanet = null;
+		for (Planet planet : planets) {
+			if (planet.getName().equals("Mars")) {
+			marsPlanet = planet;
+				break;
+			}
+				}
+
+		// Add Moon orbiting Earth
+		if (earthPlanet != null) {
+			earthPlanet.addMoon("The Moon", 2.8f, 50f, moonImage, "Jordens måne, kendt som Luna, er den femte største naturlige satellit i solsystemet og den eneste måne omkring Jorden. Med en diameter på cirka 3.474 kilometer er den relativt stor sammenlignet med sin moderplanet. Luna er kendt for sin påvirkning på tidevandene på Jorden og har været et fascinerende objekt for astronomer og forskere i århundreder. Den har en grålig overflade, der er præget af kratere, bjergkæder og mørke sletter kaldet hav. Luna er også genstand for udforskning fra forskellige rummissioner og har været et fokus for videnskabelig forskning om solsystemets historie og udvikling.");
+		} else {
+			System.out.println("Error: Earth planet not found.");
+		}
+
+		if (marsPlanet != null) {
+			marsPlanet.addMoon("Phobos", 0.032f, 25f, marsMoonImage, "Mars har to små måner, Phobos og Deimos, der begge er opkaldt efter figurer fra græsk mytologi, som ledsager krigsguden Ares (Mars' græske pendant). Disse måner er bemærkelsesværdige for deres usædvanlige udseende og deres tætte kredsløb omkring Mars. Phobos, den største af de to, har en ujævn overflade og bevæger sig hurtigt nok til at optræde som en op-og-ned-opgang for observatører på Mars' overflade. Deimos er mindre og bevæger sig langsommere, og dens overflade er præget af kratere og klipper. Begge måner antages at være fangede asteroider, der blev fanget af Mars' tyngdekraft i fortiden. Deres oprindelse giver indsigt i den tidlige historie og udvikling af Mars og solsystemet som helhed.");
+			marsPlanet.addMoon("Deimos", 0.127f, 32, marsMoon1Image, null);
+		} else {
+			System.out.println("Error: Mars planet not found.");
+		}
+
+		asteroidBelt = new AsteroidBelt(asteroidBeltImage, 0, -0.003f);
+		spaceStation = new SpaceStation(spaceStationImage, 0, -0.001f);
 }
 
-// Find Earth planet
-Planet earthPlanet = null;
-for (Planet planet : planets) {
-    if (planet.getName().equals("Earth")) {
-        earthPlanet = planet;
-        break;
-    }
-}
-Planet marsPlanet = null;
-for (Planet planet : planets) {
-    if (planet.getName().equals("Mars")) {
-       marsPlanet = planet;
-        break;
-    }
-}
-// Planet neptunePlanet = null;
-// for (Planet planet : planets) {
-// 	if (planet.getName().equals("Neptune")){
-// 		neptunePlanet = planet;
-// 		break;
-// 	}
-// }
+	//GETTERS AND SETTERS
+	private void introButtonClicked(PApplet applet) {
+		introMenuShown = true;
+	}
 
-// Add Moon orbiting Earth
-if (earthPlanet != null) {
-    earthPlanet.addMoon("The Moon", 2.8f, 50f, moonImage, "Jordens måne, kendt som Luna, er den femte største naturlige satellit i solsystemet og den eneste måne omkring Jorden. Med en diameter på cirka 3.474 kilometer er den relativt stor sammenlignet med sin moderplanet. Luna er kendt for sin påvirkning på tidevandene på Jorden og har været et fascinerende objekt for astronomer og forskere i århundreder. Den har en grålig overflade, der er præget af kratere, bjergkæder og mørke sletter kaldet hav. Luna er også genstand for udforskning fra forskellige rummissioner og har været et fokus for videnskabelig forskning om solsystemets historie og udvikling.");
-} else {
-    System.out.println("Error: Earth planet not found.");
-}
+	private void spaceStationButtonClicked(PApplet applet){
+		introMenuShown = true;
+		spaceStationShow = true;
+	}
 
-if (marsPlanet != null) {
-    marsPlanet.addMoon("Phobos", 0.032f, 25f, marsMoonImage, "Mars har to små måner, Phobos og Deimos, der begge er opkaldt efter figurer fra græsk mytologi, som ledsager krigsguden Ares (Mars' græske pendant). Disse måner er bemærkelsesværdige for deres usædvanlige udseende og deres tætte kredsløb omkring Mars. Phobos, den største af de to, har en ujævn overflade og bevæger sig hurtigt nok til at optræde som en op-og-ned-opgang for observatører på Mars' overflade. Deimos er mindre og bevæger sig langsommere, og dens overflade er præget af kratere og klipper. Begge måner antages at være fangede asteroider, der blev fanget af Mars' tyngdekraft i fortiden. Deres oprindelse giver indsigt i den tidlige historie og udvikling af Mars og solsystemet som helhed.");
-	marsPlanet.addMoon("Deimos", 0.127f, 32, marsMoon1Image, null);
-} else {
-    System.out.println("Error: Mars planet not found.");
-}
-
-asteroidBelt = new AsteroidBelt(asteroidBeltImage, 0, -0.003f);
-
-spaceStation = new SpaceStation(spaceStationImage, 0, -0.001f);
-
-}
-// if (neptunePlanet != null) {
-	// neptunePlanet.addMoon("Moon 1",0.5f, 80, neptuneMoonImage);
-	// neptunePlanet.addMoon("Moon 1",1.5f, 82, neptuneMoonImage);
-	// neptunePlanet.addMoon("Moon 1",2.5f, 84, neptuneMoonImage);
-	// neptunePlanet.addMoon("Moon 1",1.2f, 85, neptuneMoonImage);
-
-// }
-
-// 		}
+	public void deactivateAnimation(){
+		animationPaused = false;
+	}
 	
+	public void resetCooldown() {
+		cooldown = false;
+	}
+	
+	public void returnToMenu(PApplet applet) {
+		introMenuShown = false;
+		spaceStationShow = false;
+		System.out.println("introMenuShown" + introMenuShown + "spaceStationShow" + spaceStationShow);
+	}
+
     @Override
 	public void update(PApplet applet, double timeElapsed, float mouseX, float mouseY) {
 		this.timeElapsed = timeElapsed;
@@ -156,10 +154,6 @@ spaceStation = new SpaceStation(spaceStationImage, 0, -0.001f);
 			planet.update(timeElapsed);
 		}
 	}
-
-	private boolean cooldown = false;
-	private final int cooldownDuration = 500;
-	private long lastClickTime = 0;
 
 	public void drawButtons(PApplet applet, List<Planet> planets, float zoomFactor, float panX, float panY) {
 		int numButtons = planets.size();
@@ -188,12 +182,12 @@ spaceStation = new SpaceStation(spaceStationImage, 0, -0.001f);
             lastClickTime = System.currentTimeMillis();
         }
 		}
-	
 		// Reset cooldown if enough time has passed
 		if (cooldown && System.currentTimeMillis() - lastClickTime >= cooldownDuration) {
 			cooldown = false;
 		}
 	}
+
 	private void drawIntroMenu(PApplet applet) {
         // Draw background for menu
 		applet.background(0);
@@ -242,15 +236,6 @@ spaceStation = new SpaceStation(spaceStationImage, 0, -0.001f);
     }
 	
 
-	private void introButtonClicked(PApplet applet) {
-		introMenuShown = true;
-	}
-
-	private void spaceStationButtonClicked(PApplet applet){
-		introMenuShown = true;
-		spaceStationShow = true;
-	}
-
 	private void buttonClicked(int index, PApplet applet, boolean planetActive) {
 		Planet clickedPlanet = planets.get(index);
 		System.out.println("Planet clicked: " + clickedPlanet.getName());
@@ -268,44 +253,28 @@ spaceStation = new SpaceStation(spaceStationImage, 0, -0.001f);
 			}
 		}
 	}
-
-	public void deactivateAnimation(){
-	animationPaused = false;
-	}
-
-	public void resetCooldown() {
-		cooldown = false;
-	}
-
-	public void returnToMenu(PApplet applet) {
-        introMenuShown = false;
-		spaceStationShow = false;
-		System.out.println("introMenuShown" + introMenuShown + "spaceStationShow" + spaceStationShow);
-    }
 	
     @Override
 	public void draw(PApplet applet, float zoomFactor, float panX, float panY) {
     applet.background(0);
+
 	if (!introMenuShown && !spaceStationShow) {
 		drawIntroMenu(applet);
 	} else if (introMenuShown && spaceStationShow){
 		spaceStation.draw(applet);
 	} else {
 
-    if (!animationPaused) { // Check if animation is not paused
+    if (!animationPaused) {
         float sunX = applet.width / 2;
         float sunY = applet.height / 2;
         sun.draw(applet, sunX, sunY);
 		asteroidBelt.draw(applet);
 	
         for (Planet planet : planets) {
-			// System.out.println("Planet " + planet.getName() + " X: " + planet.getX() + " Y: " + planet.getY());
 			planet.draw(applet, sunX, sunY, timeElapsed);
 
 			for (Moon moon : planet.getMoons()) {
 				moon.draw(applet, (sunX + planet.getX()), (sunY + planet.getY()), timeElapsed);
-				// System.out.println("Planet " + planet.getName() + " X: " + planet.getX() + " Y: " + planet.getY());
-
 			}
         }
 		if (zoomFactor == 1.0f){
@@ -323,29 +292,3 @@ spaceStation = new SpaceStation(spaceStationImage, 0, -0.001f);
 }
 }
 }
-
-
-		
-	// 	// Draw information box
-	// 	drawInfoBox(applet);
-	// 	drawKeyBox(applet);
-    // 	drawButtons(applet, planets);
-		
-
-    //     float sunX = applet.width / 2;
-    //     float sunY = applet.height / 2;
-    //     sun.draw(applet, sunX, sunY);
-
-    //     // Draw planets
-    //     for (Planet planet : planets) {
-	// 		planet.draw(applet, sunX, sunY, timeElapsed);
-	// 	}
-
-	// 	for (PlanetStance planetStance : planetStances) {
-	// 		if (planetStance.isTransitioning()) {
-	// 			planetStance.transitionEffect(applet);
-	// 		} else {
-	// 			planetStance.draw();
-	// 		}
-	// 	}
-	// }

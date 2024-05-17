@@ -21,26 +21,22 @@ public class SpaceStation {
         topLeftInfoBox = new InfoBox(400,500,40);
     }
 
-    public void draw(PApplet applet) {
+    public void draw(PApplet applet) 
+    {
         earthImage = applet.loadImage("Earth.png");
-        float earthSize = 1000; // Set the size of the Earth image
-        float earthCenterX = applet.width - earthSize / 2; // Set the x-coordinate of Earth's center
-        float earthCenterY = applet.height - earthSize / 2; // Set the y-coordinate of Earth's center
+        float earthSize = 1000; 
+        float earthCenterX = applet.width - earthSize / 2; 
+        float earthCenterY = applet.height - earthSize / 2; 
         applet.image(earthImage, earthCenterX, earthCenterY, earthSize, earthSize);
+        applet.pushMatrix(); 
+        applet.translate(applet.width / 2, applet.height / 2); 
+        applet.rotate(rotationAngle); 
+        applet.image(image, -image.width / 2, -image.height / 2); 
+        applet.popMatrix(); 
 
-
-
-        applet.pushMatrix(); // Save the current transformation matrix
-        applet.translate(applet.width / 2, applet.height / 2); // Translate to the center of the screen
-        applet.rotate(rotationAngle); // Rotate by the current rotation angle
-        applet.image(image, -image.width / 2, -image.height / 2); // Draw the image centered
-        applet.popMatrix(); // Restore the original transformation matrix
-
-        // Increase the rotation angle
         rotationAngle += rotationSpeed;
-
-        // Ensure the rotation angle stays within 0 to 2*PI
-        if (rotationAngle > PApplet.TWO_PI) {
+        if (rotationAngle > PApplet.TWO_PI) 
+        {
             rotationAngle -= PApplet.TWO_PI;
         }
 
