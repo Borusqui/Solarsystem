@@ -15,6 +15,7 @@ public class PlanetStance {
     protected Planet planet;
     private boolean isSetupDone = false;
     private Moon moon;
+    private MoonStance moonStance;
 
     public PlanetStance(PApplet applet, PImage planetImage, Planet planet, boolean animationPaused, Program2 program) {
         this.applet = applet;
@@ -83,27 +84,38 @@ public class PlanetStance {
             applet.image(planetImage, imageX, imageY);
 
             List<Moon> moons = planet.getMoons();
-        
-        
-            if (moons != null && !moons.isEmpty()) {
-                float moonX = applet.width - moonImage.width - 100;
-                float moonY = 0 + 100;
+        if (moons != null && !moons.isEmpty()){
+            float moonX = applet.width - moonImage.width - 100;
+            float moonY = 0 + 100;
                 applet.image(moonImage, moonX, moonY);
-                drawMoonInfoBox();
-            }
+
+                if (applet.mouseX >= moonX && applet.mouseX <= moonX + moonImage.width &&
+                applet.mouseY >= moonY && applet.mouseY <= moonY + moonImage.height &&
+                applet.mousePressed) {
+                    System.out.println("Moon clicked!");
+                    moonStance.activateMoonStance();
+                }
+            
+            drawMoonInfoBox();
+        }
+            
         
             
-            }
+            
             drawLeftInfoBox();
             drawLineInfoBox();
             drawInfoBox(applet, planet.getName(), planet.getNumMoons(), planet.getMinTemperature(), planet.getMaxTemperature(), planet.getSunDist(), planet.getRotationTime()*10, planet.getGravity());
             drawBackButton(applet, planetStances);
         }
+        moonStance.draw(applet);
+    }
+        
 
 
 
 
     private void setup(){
+        moonStance = new MoonStance(applet);
         planetImage = applet.loadImage(planet.getName() + ".png");
         planetImage.resize(750,750);
 

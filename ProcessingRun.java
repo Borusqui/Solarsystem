@@ -9,6 +9,7 @@ public class ProcessingRun extends PApplet {
     private float zoomFactor = 1.0f;
     private float panX = 0;
     private float panY = 0;
+    private float curTimeSeconds;
     
 
     public enum RunState {
@@ -26,6 +27,8 @@ public class ProcessingRun extends PApplet {
     public void draw() {
         long curTime = System.currentTimeMillis();
         double timeElapsed = 0;
+        curTimeSeconds = (curTime - lastTime) / 1000;
+        System.out.println(curTimeSeconds);
 
         if (state != RunState.PAUSED) {
             timeElapsed = (curTime - lastTime) / 1000.0;

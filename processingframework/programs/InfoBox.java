@@ -108,4 +108,39 @@ public void drawInfoBox(PApplet applet, String infoText) {
     applet.text(infoText, (x + margin), (y + margin), (int)((boxWidth - 2 * margin)), (int)((boxHeight - 2 * margin)));
 }
 
+public void drawMoonInfoBox(PApplet applet, String infoText) {
+    applet.fill(255);
+    applet.textSize(14);
+
+    // Calculate the coordinates of the line's start and end points
+    float startX = applet.width / 2 + 400; // 400 pixels to the right of the center
+    float endX = applet.width / 2 + 850; // 850 pixels to the right of the center
+    float y = applet.height / 2; // Same y-coordinate as the center
+
+    // Calculate the coordinates of the tip
+    float tipX = startX - 22; // Adjust the x-coordinate for the position of the tip
+    float tipY1 = y - 50; // Adjust the y-coordinate for the position of the tip
+
+    // Draw the main line
+    applet.stroke(255); // Set line color to white
+    applet.strokeWeight(2); // Set line thickness
+    applet.line(startX, y, endX, y);
+
+    // Draw the tip
+    applet.line(startX, y, tipX, tipY1); // Line from the start point to the tip
+
+    // Draw the info box
+    float boxWidth = 400;
+    float boxHeight = 385;
+    float boxX = (startX + endX) / 2 - boxWidth / 2; // Center the box horizontally
+    float boxY = y + 10; // Position the box below the line with some margin
+    applet.fill(0); // Set fill color to black
+    applet.rect(boxX, boxY, boxWidth, boxHeight); // Draw the rectangle
+
+    // Add text inside the box
+    applet.fill(255); // Set fill color to white
+    applet.textAlign(PApplet.CENTER, PApplet.CENTER); // Align text to center
+    applet.text(infoText, boxX, boxY, boxWidth, boxHeight); // Draw the text inside the box
+}
+
 }

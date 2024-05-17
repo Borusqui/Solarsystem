@@ -21,11 +21,13 @@ public class Program2 implements ProcessingProgram {
 	private InfoBox keyBox;
 
 
+
     public Program2() {
         planets = new ArrayList<>();
 		planetStances = new ArrayList<>();
 		infoBox = new InfoBox(400,500,40);
 		keyBox = new InfoBox(400, 200, 40);
+		
 
     }
 	
@@ -297,12 +299,12 @@ spaceStation = new SpaceStation(spaceStationImage, 0, -0.001f);
 		asteroidBelt.draw(applet);
 	
         for (Planet planet : planets) {
-			System.out.println("Planet " + planet.getName() + " X: " + planet.getX() + " Y: " + planet.getY());
+			// System.out.println("Planet " + planet.getName() + " X: " + planet.getX() + " Y: " + planet.getY());
 			planet.draw(applet, sunX, sunY, timeElapsed);
 
 			for (Moon moon : planet.getMoons()) {
 				moon.draw(applet, (sunX + planet.getX()), (sunY + planet.getY()), timeElapsed);
-				System.out.println("Planet " + planet.getName() + " X: " + planet.getX() + " Y: " + planet.getY());
+				// System.out.println("Planet " + planet.getName() + " X: " + planet.getX() + " Y: " + planet.getY());
 
 			}
         }
